@@ -1,0 +1,14 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Setting up kubectl for production...
+      - aws eks update-kubeconfig --region eu-west-3 --name webservice-cluster --alias webservice-cluster
+  build:
+    commands:
+      - echo Deploying to production via Helm...
+      - helm upgrade --install wordpress-prod kube/wordpress-chart -f kube/wordpress-values.yaml --namespace production --set image.repository=654654192380.dkr.ecr.eu-west-3.amazonaws.com/webservice-ecr,image.tag=latest
+  post_build:
+    commands:
+      - echo Production deployment completed.
