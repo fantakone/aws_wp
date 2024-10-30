@@ -1,11 +1,19 @@
 version: 0.2
 
 phases:
-  build:
+install:
     commands:
-      - helm uninstall wordpress --namespace default
-      - terraform destroy --auto-approve
-
+      # Install Terraform
+      - echo "Installing Terraform..."
+      - curl -O https://releases.hashicorp.com/terraform/1.4.6/terraform_1.4.6_linux_amd64.zip
+      - unzip terraform_1.4.6_linux_amd64.zip
+      - mv terraform /usr/local/bin/
+      - terraform version  # Confirm Terraform installation
+build:
+    commands:
+      - cd terraform/environments/test
+      - terraform init
+      - terraform destroy -auto-approve
 artifacts:
   files:
     - '**/*'
