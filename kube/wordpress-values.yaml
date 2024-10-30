@@ -1,0 +1,64 @@
+USER-SUPPLIED VALUES:
+apache:
+  port: 8080
+autoscaling:
+  enabled: false
+externalCache:
+  host: webservice-cache.epyysj.cfg.euw3.cache.amazonaws.com
+  port: 11211
+externalDatabase:
+  database: wordpress_db
+  host: webservice-aurora-cluster.cluster-cvwmo8w6u1ab.eu-west-3.rds.amazonaws.com
+  password: rootroot
+  port: 3306
+  user: root
+image:
+  pullPolicy: Always
+  repository: 654654192380.dkr.ecr.eu-west-3.amazonaws.com/webservice-ecr
+  tag: latest
+ingress:
+  enabled: true
+  hosts:
+  - host: wordpress.example.com
+    paths:
+    - path: /
+      pathType: Prefix
+livenessProbe:
+  httpGet:
+    path: /wp-login.php
+    port: 8080
+  initialDelaySeconds: 120
+persistence:
+  enabled: true
+  storageClass: "gp2"
+  accessMode: ReadWriteOnce
+  size: 10Gi
+readinessProbe:
+  httpGet:
+    path: /wp-login.php
+    port: 8080
+  initialDelaySeconds: 120
+replicaCount: 1
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+service:
+  port: 8080
+  targetPort: 8080
+  type: LoadBalancer
+serviceAccount:
+  automount: true
+  create: true
+wordpressBlogName: My WordPress Blog
+wordpressEmail: user@example.com
+wordpressExtraConfig: |-
+  define('WP_SITEURL', 'http://' . $_SERVER['HTTP_HOST'] . ':8080');
+  define('WP_HOME', 'http://' . $_SERVER['HTTP_HOST'] . ':8080');
+wordpressExtraConfigContent: |
+  define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT);
+wordpressPassword: ${WORDPRESS_PASSWORD}
+wordpressUsername: user

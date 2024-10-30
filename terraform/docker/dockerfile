@@ -1,0 +1,44 @@
+# Utiliser Bitnami WordPress comme image de base
+FROM bitnami/wordpress:latest
+
+# Définir les variables d'environnement
+ENV WORDPRESS_DATABASE_HOST=${db_host}
+ENV WORDPRESS_DATABASE_PORT_NUMBER=3306
+ENV WORDPRESS_DATABASE_USER=${db_username}
+ENV WORDPRESS_DATABASE_PASSWORD=${db_password}
+ENV WORDPRESS_DATABASE_NAME=${db_name}
+ENV WORDPRESS_USERNAME=user
+ENV WORDPRESS_PASSWORD=${wordpress_password}
+ENV WORDPRESS_EMAIL=user@example.com
+ENV WORDPRESS_FIRST_NAME=FirstName
+ENV WORDPRESS_LAST_NAME=LastName
+ENV WORDPRESS_BLOG_NAME="My WordPress Blog"
+ENV WORDPRESS_SKIP_INSTALL=yes
+
+# Installer les dépendances et les outils nécessaires
+USER root
+RUN install_packages zlib1g-dev autoconf make gcc pkg-config libsasl2-dev libssl-dev
+
+# Installer libmemcached et autres via apt-get
+RUN apt-get update && apt-get install -y libmemcached-dev
+RUN apt-get install -y default-mysql-client sudo  iputils-ping ack plocate vim telnet curl traceroute
+
+
+# Configurer PHP pour de meilleures performances
+RUN echo "opcache.memory_consumption=128" >> /opt/bitnami/php/etc/php.ini && \
+    echo "opcache.interned_strings_buffer=8" >> /opt/bitnami/php/etc/php.ini && \
+    echo "opcache.max_accelerated_files=4000" >> /opt/bitnami/php/etc/php.ini && \
+    echo "opcache.revalidate_freq=2" >> /opt/bitnami/php/etc/php.ini && \
+    echo "opcache.fast_shutdown=1" >> /opt/bitnami/php/etc/php.ini
+
+# Augmenter les limites de téléchargement
+RUN echo "upload_max_filesize = 64M" >> /opt/bitnami/php/etc/php.ini && \
+    echo "post_max_size = 64M" >> /opt/bitnami/php/etc/php.ini
+
+# Revenir à l'utilisateur non-root
+USER 1001
+
+# Exposer le port 8080 (Bitnami utilise le port 8080 par défaut)
+EXPOSE 8080
+
+# Utiliser le entrypoint et CMD par défaut de l'image de base

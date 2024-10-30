@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "wordpress-chart.fullname" . }}
+  labels:
+    {{- include "wordpress-chart.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "wordpress-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "wordpress-chart.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "wordpress-chart.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            - name: WORDPRESS_DATABASE_HOST
+              value: {{ .Values.externalDatabase.host }}
+            - name: WORDPRESS_DATABASE_USER
+              value: {{ .Values.externalDatabase.user }}
+            - name: WORDPRESS_DATABASE_PASSWORD
+              value: {{ .Values.externalDatabase.password }}
+            - name: WORDPRESS_DATABASE_NAME
+              value: {{ .Values.externalDatabase.database }}
+            - name: WORDPRESS_CONFIG_EXTRA
+              value: |
+                define('WP_CACHE', true);
+                define('WP_CACHE_KEY_SALT', '{{ .Release.Name }}');
+                define('WP_REDIS_HOST', '{{ .Values.externalCache.host }}');
+                define('WP_REDIS_PORT', {{ .Values.externalCache.port }});
+            - name: WORDPRESS_USERNAME
+              value: {{ .Values.wordpressUsername }}
+            - name: WORDPRESS_PASSWORD
+              value: {{ .Values.wordpressPassword }}
+            - name: WORDPRESS_EMAIL
+              value: {{ .Values.wordpressEmail }}
+            - name: WORDPRESS_BLOG_NAME
+              value: {{ .Values.wordpressBlogName }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: wordpress-data
+              mountPath: /var/www/html
+      volumes:
+        - name: wordpress-data
+          persistentVolumeClaim:
+            claimName: {{ include "wordpress-chart.fullname" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
