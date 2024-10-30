@@ -3,6 +3,5 @@ version: 0.2
 phases:
   build:
     commands:
-      - echo Running tests on WordPress deployment...
       - kubectl get pods --namespace default | grep wordpress
       - kubectl exec -it $(kubectl get pods -n default -l app.kubernetes.io/name=wordpress -o jsonpath='{.items[0].metadata.name}') -- curl -I http://localhost:8080/wp-login.php

@@ -1,0 +1,11 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - helm uninstall wordpress --namespace default
+      - terraform destroy --auto-approve
+
+artifacts:
+  files:
+    - '**/*'

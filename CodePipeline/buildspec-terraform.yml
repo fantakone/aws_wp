@@ -8,11 +8,7 @@ phases:
       - terraform plan
   build:
     commands:
-      - echo "Lancement du Terraform Apply...""
-      - terraform apply -auto-approve
-  post_build:
-    commands:
-      - echo "Terraform deploiement terminé."
+      - terraform apply --auto-approve
 artifacts:
   files:
     - '**/*'

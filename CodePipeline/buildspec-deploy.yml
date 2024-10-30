@@ -3,12 +3,11 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo Setting up kubectl and aws-iam-authenticator...
       - aws eks update-kubeconfig --region eu-west-3 --name webservice-cluster --alias webservice-cluster
+      - aws iam attach-role-policy --role-name EKSNodeGroupRole-webservice-cluster-dev --policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy
   build:
     commands:
-      - echo Deploying WordPress via Helm...
+      - helm repo add aws-ebs-csi-driver https://kubernetes-sigs.github.io/aws-ebs-csi-driver
+      - helm repo update
+      - helm install aws-ebs-csi-driver --namespace kube-system aws-ebs-csi-driver/aws-ebs-csi-driver
       - helm upgrade --install wordpress kube/wordpress-chart -f kube/wordpress-values.yaml --namespace default --set image.repository=654654192380.dkr.ecr.eu-west-3.amazonaws.com/webservice-ecr,image.tag=latest
-  post_build:
-    commands:
-      - echo Deployment completed.
