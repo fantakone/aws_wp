@@ -12,7 +12,7 @@ install:
       - terraform version  # Confirm Terraform installation
 build:
     commands:
-      - cd terraform/environments/test
+      - cd tf/environments/test
       - terraform init
       - terraform destroy -auto-approve
 artifacts:

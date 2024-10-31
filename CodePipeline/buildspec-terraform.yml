@@ -18,7 +18,7 @@ phases:
       - ls -la terraform/environments  # Check if 'terraform/environments/test' exists
 
       # Navigate to the Terraform directory
-      - cd terraform/environments/test
+      - cd tf/environments/test
       - terraform init
       - terraform plan
   build:
