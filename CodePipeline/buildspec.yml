@@ -6,7 +6,7 @@ phases:
       - aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 654654192380.dkr.ecr.eu-west-3.amazonaws.com
   build:
     commands:
-      - docker build -t webservice-ecr -f terraform/docker/dockerfile .
+      - docker build -t webservice-ecr -f tf/docker/dockerfile .
       - docker tag webservice-ecr:latest 654654192380.dkr.ecr.eu-west-3.amazonaws.com/webservice-ecr:latest
   post_build:
     commands:
