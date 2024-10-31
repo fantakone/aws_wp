@@ -12,6 +12,12 @@ phases:
       - terraform version  # Confirm Terraform installation
   pre_build:
     commands:
+      - echo "Checking current directory and listing files..."
+      - pwd  # Print working directory
+      - ls -la  # List all files and directories
+      - ls -la terraform/environments  # Check if 'terraform/environments/test' exists
+
+      # Navigate to the Terraform directory
       - cd terraform/environments/test
       - terraform init
       - terraform plan
