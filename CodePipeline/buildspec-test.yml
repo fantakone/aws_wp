@@ -8,7 +8,7 @@ install:
       - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       - chmod +x kubectl
       - mv kubectl /usr/local/bin/
-      - kubectl version --client  # Confirm kubectl installation
+      - kubectl version --client 
 build:
     commands:
       - kubectl get pods --namespace default | grep wordpress
