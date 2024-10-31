@@ -13,11 +13,13 @@ phases:
   pre_build:
       commands:
       # Navigate to the Terraform dir
+      - aws sts get-caller-identity
       - cd tf/environments/test
       - rm -rf .terraform
       - rm -f .terraform.lock.hcl
       - terraform init -reconfigure
-      - terraform plan
+      - terraform import 'module.ecr.aws_ecr_repository.main' 'webservice-ecr'
+      - terraform plan -out=tfplan
   build:
     commands:
       - terraform apply --auto-approve

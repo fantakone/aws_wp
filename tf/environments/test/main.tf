@@ -1,5 +1,8 @@
 provider "aws" {
   region = var.aws_region
+  assume_role {
+    role_arn = "arn:aws:iam::654654192380:role/CicdCodeBuildRole"
+  }
 }
 
 /*data "aws_ami" "bastion" {
@@ -187,7 +190,7 @@ module "cloudfront" {
 }
 
 
-/*module "ecr" {
+module "ecr" {
   source       = "../../modules/ecr"
   project_name = var.project_name
-}*/
+}

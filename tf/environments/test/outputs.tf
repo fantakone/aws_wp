@@ -45,7 +45,7 @@ output "cloudfront_domain_name" {
   description = "The domain name of the CloudFront distribution"
   value       = module.cloudfront.cloudfront_domain_name
 }
-/*output "ecr_repository_url" {
+output "ecr_repository_url" {
   description = "L'URL du repository ECR"
   value       = module.ecr.repository_url
-}*/
+}
