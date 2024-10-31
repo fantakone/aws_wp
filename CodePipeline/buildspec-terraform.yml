@@ -12,7 +12,7 @@ phases:
       - terraform version  # Confirm Terraform installation
   pre_build:
       commands:
-      # Navigate to the Terraform directory
+      # Navigate to the Terraform dir
       - cd tf/environments/test
       - terraform init
       - terraform plan
