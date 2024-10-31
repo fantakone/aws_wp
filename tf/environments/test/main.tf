@@ -1,8 +1,6 @@
 provider "aws" {
   region = var.aws_region
-  assume_role {
-    role_arn = "arn:aws:iam::654654192380:role/CicdCodeBuildRole"
-  }
+  
 }
 
 /*data "aws_ami" "bastion" {
