@@ -110,6 +110,7 @@ module "eks" {
   kubeconfig_path           = var.kubeconfig_path
   access_key                = var.access_key
   secret_key                = var.secret_key
+  aws_region                = var.aws_region
 
   depends_on = [module.subnets]
 }
@@ -151,6 +152,11 @@ terraform {
     random = {
       source  = "hashicorp/random"
       version = "~> 3.5"
+    }
+
+  null = {
+      source  = "hashicorp/null"
+      version = "~> 3.1"
     }
   }
 }
