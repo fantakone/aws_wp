@@ -161,7 +161,7 @@ resource "aws_iam_role_policy_attachment" "ebs_csi_driver" {
 # Configure kubeconfig using a local-exec provisioner
 resource "null_resource" "configure_kubectl" {
   provisioner "local-exec" {
-    command = "aws eks update-kubeconfig --region ${var.aws_region} --name ${aws_eks_cluster.eks-cluster.name}"
+    command = "aws eks update-kubeconfig --region eu-west-3 --name ${aws_eks_cluster.eks-cluster.name}"
   }
 
   depends_on = [aws_eks_cluster.eks-cluster]
