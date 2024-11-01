@@ -18,6 +18,7 @@ phases:
       - rm -rf .terraform
       - rm -f .terraform.lock.hcl
       - terraform init -reconfigure
+      - terraform refresh 
       - terraform plan -out=tfplan
   build:
     commands:
