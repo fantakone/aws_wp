@@ -12,13 +12,12 @@ phases:
       - terraform version  # Confirm Terraform installation
   pre_build:
       commands:
-      # Navigate to the Terraform dir
+      # Navigate to the Terraform directory
       - aws sts get-caller-identity
       - cd tf/environments/test
       - rm -rf .terraform
       - rm -f .terraform.lock.hcl
       - terraform init -reconfigure
-      - terraform import 'module.ecr.aws_ecr_repository.main' 'webservice-ecr'
       - terraform plan -out=tfplan
   build:
     commands:
