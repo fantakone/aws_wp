@@ -42,6 +42,8 @@ module "subnets" {
   availability_zones       = var.availability_zones
   project_name             = var.project_name
   internet_gateway_id      = module.vpc.internet_gateway_id
+
+    depends_on = [module.vpc]
 }
 
 /*module "bastion" {
@@ -91,6 +93,8 @@ module "cache" {
   private_app_subnet_cidr = var.private_app_subnet_cidrs[0]
   node_type               = var.cache_node_type
   num_cache_nodes         = var.cache_num_nodes
+
+  depends_on = [module.subnets]
 }
 
 # création du cluster EKS
@@ -106,6 +110,8 @@ module "eks" {
   kubeconfig_path           = var.kubeconfig_path
   access_key                = var.access_key
   secret_key                = var.secret_key
+
+  depends_on = [module.subnets]
 }
 
 # Configuration pour autoscaler
@@ -170,6 +176,8 @@ module "cloudwatch" {
   metric_transformation_namespace = var.metric_transformation_namespace
   metric_transformation_name      = var.metric_transformation_name
   log_stream_name                 = var.log_stream_name
+
+  depends_on            = [module.eks]
 }
 
 /*module "nlb" {
@@ -185,10 +193,13 @@ module "cloudfront" {
   region       = var.aws_region
   lb_dns_name = "wordpress-lb.${var.aws_region}.elb.amazonaws.com"
   tags         = var.tags
+
+  depends_on            = [module.eks]
 }
 
 
 module "ecr" {
   source       = "../../modules/ecr"
   project_name = var.project_name
+
 }
