@@ -24,6 +24,14 @@ resource "aws_rds_cluster" "aurora" {
   preferred_backup_window = "03:00-05:00"
   db_subnet_group_name    = aws_db_subnet_group.aurora.name
   vpc_security_group_ids  = [aws_security_group.aurora.id]
+
+  # Lifecycle settings to avoid re-creation
+  lifecycle {
+    ignore_changes = [
+      engine_version,  // Ignores engine version changes
+      master_password  // Ignores changes to the master password
+    ]
+  }
   depends_on = [aws_db_subnet_group.aurora]
 
 }
@@ -36,4 +44,11 @@ resource "aws_rds_cluster_instance" "aurora_instances" {
   engine               = aws_rds_cluster.aurora.engine
   engine_version       = aws_rds_cluster.aurora.engine_version
   publicly_accessible  = false
+
+   # Lifecycle settings to avoid re-creation
+  lifecycle {
+    ignore_changes = [
+      instance_class  // Ignores changes to the instance class
+    ]
+  }
 }

@@ -24,5 +24,5 @@ phases:
     commands:
       - helm repo add aws-ebs-csi-driver https://kubernetes-sigs.github.io/aws-ebs-csi-driver
       - helm repo update
-      - helm install aws-ebs-csi-driver --namespace kube-system aws-ebs-csi-driver/aws-ebs-csi-driver
+      - helm upgrade --install aws-ebs-csi-driver --namespace kube-system aws-ebs-csi-driver/aws-ebs-csi-driver
       - helm upgrade --install wordpress kube/wordpress-chart -f kube/wordpress-values.yaml --namespace default --set image.repository=654654192380.dkr.ecr.eu-west-3.amazonaws.com/webservice-ecr,image.tag=latest
