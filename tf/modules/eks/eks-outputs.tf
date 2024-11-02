@@ -26,6 +26,6 @@ output "eks_oidc_provider_arn" {
   value = aws_iam_openid_connect_provider.eks-openid-connect.arn
 }
 
-output "ebs_storage_class_name" {
+/*output "ebs_storage_class_name" {
   value = kubernetes_storage_class.ebs_sc.metadata[0].name
-}
+}*/
