@@ -159,14 +159,15 @@ resource "aws_iam_role_policy_attachment" "ebs_csi_driver" {
 }
 
 # Configure kubeconfig using a local-exec provisioner
-resource "null_resource" "configure_kubectl" {
+/*resource "null_resource" "configure_kubectl" {
   provisioner "local-exec" {
     command = "aws eks update-kubeconfig --region eu-west-3 --name ${aws_eks_cluster.eks-cluster.name}"
   }
 
   depends_on = [aws_eks_cluster.eks-cluster]
 }
-resource "helm_release" "aws_ebs_csi_driver" {
+
+/*resource "helm_release" "aws_ebs_csi_driver" {
   name       = "aws-ebs-csi-driver"
   repository = "https://kubernetes-sigs.github.io/aws-ebs-csi-driver"
   chart      = "aws-ebs-csi-driver"
@@ -178,9 +179,9 @@ resource "helm_release" "aws_ebs_csi_driver" {
   }
 
   depends_on = [aws_eks_cluster.eks-cluster, null_resource.configure_kubectl]
-}
+}*/
 
-resource "kubernetes_storage_class" "ebs_sc" {
+/*resource "kubernetes_storage_class" "ebs_sc" {
   metadata {
     name = "ebs-sc"
   }
@@ -193,4 +194,4 @@ resource "kubernetes_storage_class" "ebs_sc" {
   }
 
   depends_on = [helm_release.aws_ebs_csi_driver]
-}
+}*/

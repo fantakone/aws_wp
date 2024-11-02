@@ -152,10 +152,10 @@ terraform {
       version = "~> 3.5"
     }
 
-  null = {
+  /*null = {
       source  = "hashicorp/null"
       version = "~> 3.1"
-    }
+    }*/
   }
 }
 

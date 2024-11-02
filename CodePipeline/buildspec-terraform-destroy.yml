@@ -1,7 +1,7 @@
 version: 0.2
 
 phases:
-install:
+ install:
     commands:
       # Install Terraform
       - echo "Installing Terraform..."
@@ -10,11 +10,11 @@ install:
       - unzip terraform_1.7.0_linux_amd64.zip
       - mv terraform /usr/local/bin/
       - terraform version  # Confirm Terraform installation
-build:
+ build:
     commands:
       - cd tf/environments/test
       - terraform init
       - terraform destroy -auto-approve
-artifacts:
-  files:
-    - '**/*'
+ artifacts:
+   files:
+      - '**/*'
