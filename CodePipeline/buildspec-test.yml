@@ -3,16 +3,26 @@ version: 0.2
 phases:
   install:
     commands:
-      # Install kubectl
-      - echo "Installing kubectl..."
-      - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-      - chmod +x kubectl
-      - mv kubectl /usr/local/bin/
-      - kubectl version --client
+      # Install AWS CLI (already available in CodeBuild environment, but just in case)
+      - echo "Installing AWS CLI if not already available..."
+      - if ! command -v aws &> /dev/null; then
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip";
+          unzip awscliv2.zip;
+          sudo ./aws/install;
+        fi
+      # Verify AWS CLI installation
+      - aws --version
+
   build:
     commands:
       - echo "Running tests..."
-      - aws eks update-kubeconfig --region eu-west-3 --name webservice-cluster --alias webservice-cluster
-      - kubectl get pods --namespace default | grep wordpress
-      - export LOAD_BALANCER_URL=$(kubectl get svc -n default -l app.kubernetes.io/name=wordpress -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}')
-      - curl -I http://$LOAD_BALANCER_URL:8080/wp-login.php
+      # Set up kubeconfig for EKS, assuming a role if necessary
+      - aws eks update-kubeconfig --region eu-west-3 --name webservice-cluster --alias webservice-cluster --role-arn arn:aws:iam::654654192380:role/EKSClusterRole-webservice-dev
+      # Find the load balancer DNS name associated with WordPress
+      - echo "Retrieving Load Balancer DNS for WordPress service..."
+      - export LOAD_BALANCER_URL=$(aws elb describe-load-balancers --query "LoadBalancerDescriptions[?contains(DNSName, 'wordpress')].DNSName" --output text)
+      # Check if the LOAD_BALANCER_URL is set and handle error
+      - test -n "$LOAD_BALANCER_URL" && echo "Load Balancer URL found: $LOAD_BALANCER_URL" || { echo "Load Balancer URL not found for WordPress."; exit 1; }
+      # Test access to the WordPress site
+      - echo "Testing access to WordPress..."
+      - curl -I http://$LOAD_BALANCER_URL:8080
