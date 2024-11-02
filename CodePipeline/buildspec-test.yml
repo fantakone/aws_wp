@@ -12,5 +12,7 @@ phases:
   build:
     commands:
       - echo "Running tests..."
+      - aws eks update-kubeconfig --region eu-west-3 --name webservice-cluster --alias webservice-cluster
       - kubectl get pods --namespace default | grep wordpress
-      - kubectl exec -it $(kubectl get pods -n default -l app.kubernetes.io/name=wordpress -o jsonpath='{.items[0].metadata.name}') -- curl -I http://localhost:8080/wp-login.php
+      - export LOAD_BALANCER_URL=$(kubectl get svc -n default -l app.kubernetes.io/name=wordpress -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}')
+      - curl -I http://$LOAD_BALANCER_URL:8080/wp-login.php
