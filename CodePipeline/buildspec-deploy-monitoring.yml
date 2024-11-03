@@ -1,7 +1,7 @@
 version: 0.2
 
 phases:
-install:
+  install:
     commands:
     # Install Helm
       - echo "Installing Helm..."
@@ -16,14 +16,29 @@ install:
       - chmod +x kubectl
       - mv kubectl /usr/local/bin/
       - kubectl version --client  # Confirm kubectl installation
-pre_build:
+  pre_build:
     commands:
+      - echo "Configuring kubectl for EKS..."
       - aws eks update-kubeconfig --region eu-west-3 --name webservice-cluster --alias webservice-cluster
-build:
+      - kubectl create namespace monitoring || echo "Namespace 'monitoring' already exists"
+  build:
     commands:
+      - echo "Ajout des repos Helm pour Prometheus and Grafana..."
       - helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
       - helm repo add grafana https://grafana.github.io/helm-charts
       - helm repo update
-      - kubectl create namespace monitoring
-      - helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
-      - helm install grafana grafana/grafana --namespace monitoring
+      
+      - echo "Deploying Prometheus..."
+      - helm upgrade --install prometheus prometheus-community/prometheus --namespace monitoring
+      
+      - echo "Deploying Grafana..."
+      - helm upgrade --install grafana grafana/grafana --namespace monitoring --set adminPassword='admin'
+  post_build:
+    commands:
+      - echo "Prometheus and Grafana deployed successfully."
+      - export GRAFANA_URL=$(kubectl get svc --namespace monitoring grafana -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
+      - echo "Grafana URL: http://$GRAFANA_URL"
+artifacts:
+  files:
+    - "**/*"
+  discard-paths: yes
