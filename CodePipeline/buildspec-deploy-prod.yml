@@ -1,30 +1,33 @@
 version: 0.2
 
 phases:
-install:
+  install:
     commands:
-    # Install Helm
+      # Install Helm
       - echo "Installing Helm..."
       - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
       - chmod 700 get_helm.sh
       - ./get_helm.sh
       - helm version  # Confirm Helm installation
 
-    # Install kubectl
+      # Install kubectl
       - echo "Installing kubectl..."
       - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       - chmod +x kubectl
       - mv kubectl /usr/local/bin/
       - kubectl version --client  # Confirm kubectl installation
-pre_build:
+
+  pre_build:
     commands:
-      - echo Setting up kubectl for production...
+      - echo "Setting up kubectl for production..."
       - aws eks update-kubeconfig --region eu-west-3 --name webservice-cluster --alias webservice-cluster
-build:
+
+  build:
     commands:
-      - echo Deploying to production via Helm...
-      - kubectl create namespace production
+      - echo "Deploying to production via Helm..."
+      - kubectl create namespace production || echo "Namespace production already exists"
       - helm upgrade --install wordpress-prod kube/wordpress-chart -f kube/wordpress-values.yaml --namespace production --set image.repository=654654192380.dkr.ecr.eu-west-3.amazonaws.com/webservice-ecr,image.tag=latest
-post_build:
+
+  post_build:
     commands:
-      - echo Production deployment completed.
+      - echo "Production deployment completed."
