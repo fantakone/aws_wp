@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     commands:
-      - #echo "Installing AWS CLI if not already available..."
+      # Installer AWS CLI si nécessaire
       - |
           if ! command -v aws &> /dev/null; then
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip";
@@ -14,16 +14,18 @@ phases:
 
   build:
     commands:
-      - #echo "Running tests..."
-      - aws eks update-kubeconfig --region eu-west-3 --name webservice-cluster --alias webservice-cluster --role-arn arn:aws:iam::654654192380:role/EKSClusterRole-webservice-dev
-      - #echo "Retrieving Load Balancer DNS for WordPress service..."
+      - echo "Running tests..."
+      # Configure kubeconfig pour EKS
+      - aws eks update-kubeconfig --region eu-west-3 --name webservice-cluster --alias webservice-cluster
+      # Obtenir le DNS du load balancer
       - |
-          LOAD_BALANCER_URL=$(aws elb describe-load-balancers --query "LoadBalancerDescriptions[?contains(DNSName, 'wordpress')].DNSName" --output text)
+          LOAD_BALANCER_URL=$(aws elb describe-load-balancers --query "LoadBalancerDescriptions[0].DNSName" --output text)
           if [ -z "$LOAD_BALANCER_URL" ]; then
-            echo "Load Balancer URL not found for WordPress.";
+            echo "Load Balancer URL not found.";
             exit 1;
           else
             echo "Load Balancer URL found: $LOAD_BALANCER_URL";
           fi
-      - echo "Testing access to WordPress..."
+      # Testez l'accès à WordPress en ajoutant le port 8080
+      - echo "Test de l'access à WordPress..."
       - curl -I http://$LOAD_BALANCER_URL:8080
