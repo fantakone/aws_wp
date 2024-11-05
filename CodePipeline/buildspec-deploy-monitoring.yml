@@ -36,8 +36,8 @@ phases:
   post_build:
     commands:
       - echo "Prometheus and Grafana deployed successfully."
-      - export GRAFANA_URL=$(kubectl get svc --namespace monitoring grafana -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
-      - echo "Grafana URL: http://$GRAFANA_URL"
+      #- export GRAFANA_URL=$(kubectl get svc --namespace monitoring grafana -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
+      #- echo " $GRAFANA_URL "
 artifacts:
   files:
     - "**/*"
